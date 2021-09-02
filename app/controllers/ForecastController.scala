@@ -1,9 +1,8 @@
 package controllers
 
-import model.{Supplier, Suppliers}
+import model.{Forecast, Production, Stock, SupplierInfo, Suppliers}
 
 import javax.inject._
-import play.api._
 import play.api.libs.json.Json
 import play.api.mvc._
 
@@ -11,16 +10,30 @@ import scala.collection.mutable
 
 @Singleton
 class ForecastController @Inject()(val controllerComponents: ControllerComponents) extends BaseController {
-  //private val suppliersList: Suppliers = Suppliers(List())
-  private val suppliersList = new Suppliers(mutable.ListBuffer[Supplier]())
+  private val suppliersList = Suppliers(mutable.ListBuffer[SupplierInfo]())
 
-
-  // curl localhost:9000/forecast/suppliers
-  def getAll(): Action[AnyContent] = Action {
+  def getAll: Action[AnyContent] = Action {
     if (suppliersList.suppliersInfo.isEmpty) NoContent else Ok(Json.toJson(suppliersList))
   }
 
-  // curl localhost:9000/forecst/suppliers/Redstick
+  def getStock(elapsedTime: Int): Action[AnyContent] = Action {
+    val stocks = suppliersList
+      .suppliersInfo
+      .toList
+      .map(supp => Forecast(supp.age + elapsedTime).getStock)
+      .foldLeft(Stock(0, 0))((newStock, stock) => Stock(newStock.glasses + stock.glasses, newStock.frames + stock.frames))
+    Ok(Json.toJson(stocks))
+  }
+
+  def getProd(elapsedTime: Int): Action[AnyContent] = Action {
+    val prod = suppliersList
+      .suppliersInfo
+      .toList
+      .map(supp => Forecast(supp.age + elapsedTime).getProduction(supp.name))
+
+    Ok(Json.toJson(Production(prod)))
+  }
+
   def getByName(name: String) = Action {
     suppliersList.suppliersInfo.find(_.name == name) match {
       case Some(name) => Ok(Json.toJson(name))
@@ -28,34 +41,19 @@ class ForecastController @Inject()(val controllerComponents: ControllerComponent
     }
   }
 
-  // curl -v -d '{"suppliers": [{"name": "GlassesRUs", "age": "4"},{"name": "Redstick", "age": "10"}]}' -H 'Content-Type: application/json' -X POST localhost:9000/suppliers/load
-  def loadSuppliers() = Action { implicit request =>
-    val content = request.body
-    val jsonObject = content.asJson
+  def loadSuppliers = Action { implicit request =>
+    val suppliersOpt = request
+      .body
+      .asJson
+      .flatMap(Json.fromJson[Suppliers](_).asOpt)
 
-        val suppliersOpt: Option[Suppliers] = jsonObject.flatMap(Json.fromJson[Suppliers](_).asOpt)
-
-        suppliersOpt match {
-          case Some(suppliers) => {
-            suppliersList.suppliersInfo.clear()
-            suppliers.suppliersInfo.foreach { supp =>
-              suppliersList.suppliersInfo += supp
-            }
-          }
-            ResetContent
-          case None =>
-            BadRequest
-        }
-//    val supplierOpt: Option[Supplier] = jsonObject.flatMap(Json.fromJson[Supplier](_).asOpt)
-//
-//    supplierOpt match {
-//      case Some(supplier) => {
-//        suppliersList.suppliersInfo.clear()
-//        suppliersList.suppliersInfo += supplier
-//      }
-//        ResetContent
-//      case None =>
-//        BadRequest
-//    }
+    suppliersOpt match {
+      case Some(suppliers) => {
+        suppliersList.suppliersInfo.clear()
+        suppliers.suppliersInfo.foreach(suppliersList.suppliersInfo += _)
+      }
+        ResetContent
+      case None => BadRequest
+    }
   }
 }

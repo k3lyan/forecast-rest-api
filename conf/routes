@@ -1,5 +1,6 @@
 # Routes
 
 GET     /forecast/suppliers             controllers.ForecastController.getAll
-GET     /forecast/suppliers/:name       controllers.ForecastController.getByName(name: String)
+GET     /forecast/suppliers/:T          controllers.ForecastController.getProd(T: Int)
+GET     /forecast/stock/:T              controllers.ForecastController.getStock(T: Int)
 POST    /suppliers/load                 controllers.ForecastController.loadSuppliers
