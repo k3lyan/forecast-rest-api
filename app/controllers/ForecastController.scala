@@ -34,12 +34,6 @@ class ForecastController @Inject()(val controllerComponents: ControllerComponent
     Ok(Json.toJson(Production(prod)))
   }
 
-  def getByName(name: String) = Action {
-    suppliersList.suppliersInfo.find(_.name == name) match {
-      case Some(name) => Ok(Json.toJson(name))
-      case None => NotFound
-    }
-  }
 
   def loadSuppliers = Action { implicit request =>
     val suppliersOpt = request
