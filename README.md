@@ -8,12 +8,15 @@ This project handles the 2 use cases:
  
  
 ## Short Description
-This REST service has been built using [Play Framework](https://www.playframework.com/). A Model-Controller architecture has been used to seperate the different layers of the application. The model part to handle all the business data and calculations, and the controllers to handle the HTTP requests properly. In this MVP I decided to be able to modify the list of suppliers in-memory by making use of a mutable list. This can bring side-effect, another solution could be to make use of an immutable list and connect the service to a dedicated database and to withdraw the saved data from the database to calculate the forecast. However, the suppliers data needs to be delete from the database before each load and this might increase the response time as you need to operate several actions to the database.     
+This REST service has been built using [Play Framework](https://www.playframework.com/). A Model-Controller architecture has been used to seperate the different layers of the application. The model part to handle all the business data and calculations, and the controllers to handle the HTTP requests properly. 
+   
+In this MVP I decided to be able to modify the list of suppliers in-memory by making use of a mutable list. This can bring side-effect. A solution could be to make use of an immutable list and connect the service to a dedicated database and withdraw the saved data from the database before calculating the forecast. However, the suppliers data needs to be deleted from the database before each load and this might increase the response time as you need to operate several actions to the database. Another alternative I found is migrating the code by to [http4s](https://http4s.org/) with [IO](https://typelevel.org/cats-effect/docs/2.x/datatypes/io) from cats-effect to handle more "purely" side-effects. As I was interested by http4s I'm currently working on it on another feature branch. 
+   
 To handle client errors each data model has been validated to be parsed and written in json, and in case of server internal error the ```play.http.errorHandler = play.api.http.JsonHttpErrorHandle``` have been added to the application.conf file returning a json to the client.
 
 
 ## Requests
-I personnaly used [postman](https://www.postman.com/) to test my different requests but they can be tested as well using curl  directly from the command line. Once you have run the application (*see how to run section*), you can make use of the different requests handled by the REST service.
+I personnaly used [postman](https://www.postman.com/) to test my different requests but they can be tested as well using curl  directly from the terminal console. Once you have run the application (see *How to run section*), you can make use of the different requests handled by the REST service from another terminal console.
 
 ### Load the suppliers
 As an example, you can load the following list of suppliers by running:   
