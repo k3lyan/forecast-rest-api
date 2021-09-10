@@ -3,7 +3,7 @@ package controllers
 import model.{Forecast, Production, Stock, SupplierInfo, Suppliers}
 
 import javax.inject._
-import play.api.libs.json.Json
+import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.mvc._
 
 import scala.collection.mutable
@@ -20,8 +20,11 @@ class ForecastController @Inject()(val controllerComponents: ControllerComponent
     val stocks = suppliersList
       .suppliersInfo
       .toList
-      .map(supp => Forecast(supp.age + elapsedTime).getStock)
-      .foldLeft(Stock(0, 0))((newStock, stock) => Stock(newStock.glasses + stock.glasses, newStock.frames + stock.frames))
+      .map(supp => Forecast(supp.age, elapsedTime).getStock)
+      .foldLeft(Stock(0, 0))((newStock, stock) => {
+        Stock(newStock.glasses + stock.glasses, newStock.frames + stock.frames)
+      })
+
     Ok(Json.toJson(stocks))
   }
 
@@ -29,25 +32,20 @@ class ForecastController @Inject()(val controllerComponents: ControllerComponent
     val prod = suppliersList
       .suppliersInfo
       .toList
-      .map(supp => Forecast(supp.age + elapsedTime).getProduction(supp.name))
+      .map(supp => Forecast(supp.age, elapsedTime).getProduction(supp.name))
 
     Ok(Json.toJson(Production(prod)))
   }
 
 
-  def loadSuppliers = Action { implicit request =>
-    val suppliersOpt = request
-      .body
-      .asJson
-      .flatMap(Json.fromJson[Suppliers](_).asOpt)
-
-    suppliersOpt match {
-      case Some(suppliers) => {
+  def loadSuppliers = Action(parse.json) { implicit request =>
+    request.body.validate[Suppliers] match {
+      case JsSuccess(suppliers, _) => {
         suppliersList.suppliersInfo.clear()
         suppliers.suppliersInfo.foreach(suppliersList.suppliersInfo += _)
-      }
         ResetContent
-      case None => BadRequest
+      }
+      case JsError(_) => BadRequest
     }
   }
 }
