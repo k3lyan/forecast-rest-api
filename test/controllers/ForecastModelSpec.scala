@@ -33,7 +33,7 @@ class ForecastModelSpec extends PlaySpec {
       val elapsedTime = 50
       val totalDays = elapsedTime + age
       val forecast = Forecast(age, elapsedTime)
-      forecast.producedGlasses mustBe (50 + totalDays * 0.003).toInt
+      forecast.producedGlasses mustBe ((elapsedTime - 30) * (50 + totalDays * 0.003)).toInt
     }
   }
 

@@ -51,7 +51,7 @@ curl -X GET http://localhost:9000/forecast/stock/113
 With the suppliers list loaded in the *Load the suppliers* section for example, the result should be:
 ```
 {
-    "glasses": 100,
+    "glasses": 8359,
     "frames": 19000
 }
 ```

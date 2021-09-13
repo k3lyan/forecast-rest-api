@@ -6,7 +6,7 @@ final case class Forecast(age: Int, elapsedTime: Int) {
 
   val producedGlasses =
     if (elapsedTime < 30) 0
-    else (50 + totalDays * 0.003).toInt
+    else ((elapsedTime - 30) * (50 + totalDays * 0.003)).toInt
 
   val daysOfProduction: Int =
     if (elapsedTime < 30) 0
