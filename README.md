@@ -3,8 +3,8 @@
  
 ## Requirements
 This project handles the 2 use cases:
-* As a business owner I want to be able to load a new set of suppliers into my webshop using an REST service
-* As a business owner I want to be able to query my forecast towards glasses and frames using a REST service which outputs JSON data
+* Being able to load a new set of suppliers into my webshop using an REST service
+* Being able to query my forecast towards glasses and frames using a REST service which outputs JSON data
  
  
 ## Short Description
