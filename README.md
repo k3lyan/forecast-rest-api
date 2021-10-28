@@ -1,4 +1,4 @@
-# sales-forecasting-rest-api
+# Sales forecasting
 
  
 ## Requirements
